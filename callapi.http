@@ -1,0 +1,25 @@
+GET https://emkc.org/api/v2/piston/runtimes
+Content-Type: application/json
+
+###
+POST https://emkc.org/api/v2/piston/execute
+Content-Type: application/json
+
+{
+    "language": "python",
+    "version": "3.10.0",
+    "files": [
+        {
+            "name": "main.py",
+            "content": "a = (input()\nb = input()\nprint(a + b)"
+        }
+    ],
+    "stdin": "1\n2\n",
+    "args": [],
+    "compile_timeout": 10000,
+    "run_timeout": 3000,
+    "compile_cpu_time": 10000,
+    "run_cpu_time": 3000,
+    "compile_memory_limit": -1,
+    "run_memory_limit": -1
+}

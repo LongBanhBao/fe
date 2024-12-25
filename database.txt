@@ -1,0 +1,100 @@
+Database dùng cho trang web học thuật toán sắp xếp
+Database gồm các bảng:
+- Users
++ Bảng này sẽ lưu thông tin về tất cả người dùng: admin, teacher, student.
+    
+    user_id	INT AUTO_INCREMENT	Primary Key
+    email	VARCHAR(255)	Email người dùng, unique
+    password	VARCHAR(255)	Mật khẩu(được mã hóa)
+    role	ENUM('admin', 'teacher', 'student')	Vai trò của người dùng
+    confirm_key	VARCHAR(255)	Key xác nhận(chỉ có admin)
+    reset_password_token	VARCHAR(255)	Token dùng để reset mật khẩu(chỉ cho teacher và student)
+
+- Classes
+Bảng này lưu thông tin về các lớp học mà các giáo viên tạo.
+
+    Column	Type	Description
+    class_id	INT AUTO_INCREMENT	Primary Key
+    teacher_id	INT	Foreign Key (Users.user_id)
+    class_code	VARCHAR(100)	Mã lớp học(unique)
+    class_name	VARCHAR(255)	Tên lớp học
+
+- Class_Students
+Bảng này sẽ lưu mối quan hệ giữa student và lớp học.
+
+    Column	Type	Description
+    class_id	INT	Foreign Key(Classes.class_id)
+    student_id	INT	Foreign Key(Users.user_id)
+
+- Assignments
+Bảng này lưu thông tin về các bài tập mà giáo viên thêm vào các lớp học.
+
+    Column	Type	Description
+    assignment_id	INT AUTO_INCREMENT	Primary Key
+    class_id	INT	Foreign Key(Classes.class_id)
+    teacher_id	INT	Foreign Key(Users.user_id)
+    title	VARCHAR(255)	Tên bài tập
+    description	TEXT	Mô tả bài tập
+    level	ENUM('basic', 'intermediate', 'advanced')	Mức độ bài tập
+    points	INT	Điểm số của bài tập
+
+- Assignments_Tests
+Bảng này lưu thông tin về các test case cho mỗi bài tập.
+
+    Column	Type	Description
+    test_case_id	INT AUTO_INCREMENT	Primary Key
+    assignment_id	INT	Foreign Key(Assignments.assignment_id)
+    input	TEXT	Dữ liệu đầu vào của test case
+    output	TEXT	Dữ liệu đầu ra của test case
+    is_valid	BOOLEAN	Xác định test case có hợp lệ hay không
+
+- Submissions
+Bảng này lưu thông tin về các bài tập mà học sinh đã làm.
+
+    Column	Type	Description
+    submission_id	INT AUTO_INCREMENT	Primary Key
+    student_id	INT	Foreign Key(Users.user_id)
+    assignment_id	INT	Foreign Key(Assignments.assignment_id)
+    code	TEXT	Mã nguồn mà student đã nộp
+    result	TEXT	Kết quả chấm điểm tự động
+    created_at	DATETIME	Ngày giờ nộp bài
+    updated_at	DATETIME	Ngày giờ cập nhật bài nộp
+
+- Assignment_Statistics
+Bảng này sẽ lưu thống kê về các bài tập trong lớp học.
+
+    Column	Type	Description
+    stat_id	INT AUTO_INCREMENT	Primary Key
+    assignment_id	INT	Foreign Key(Assignments.assignment_id)
+    total_students	INT	Tổng số học sinh đã làm bài
+    correct_count	INT	Tổng số học sinh làm đúng
+    level	ENUM('basic', 'intermediate', 'advanced')	Mức độ bài tập
+
+- Exercise_Types
+Bảng này lưu các loại bài tập trong kho bài tập.
+
+    Column	Type	Description
+    exercise_type_id	INT AUTO_INCREMENT	Primary Key
+    name	VARCHAR(255)	Tên loại bài tập
+    description	TEXT	Mô tả chi tiết về loại bài tập
+
+- Exercises
+Bảng này lưu thông tin về các bài tập mà giáo viên đã tạo trong kho bài tập.
+
+    Column	Type	Description
+    exercise_id	INT AUTO_INCREMENT	Primary Key
+    teacher_id	INT	Foreign Key(Users.user_id)
+    title	VARCHAR(255)	Tên bài tập
+    description	TEXT	Mô tả bài tập
+    level	ENUM('basic', 'intermediate', 'advanced')	Mức độ bài tập
+    exercise_type_id	INT	Foreign Key(Exercise_Types.exercise_type_id)
+    created_at	DATETIME	Ngày giờ tạo bài tập
+    updated_at	DATETIME	Ngày giờ cập nhật bài tập
+
+- Algorithms
+Bảng này lưu mô tả về các thuật toán mà người dùng có thể xem.
+
+    Column	Type	Description
+    algorithm_id	INT AUTO_INCREMENT	Primary Key
+    name	VARCHAR(255)	Tên thuật toán
+    description	TEXT	Mô tả chi tiết về thuật toán

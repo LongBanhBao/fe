@@ -19,6 +19,9 @@ const InsertionSort: React.FC = () => {
   const [sortSteps, setSortSteps] = useState<Step[]>([]);
   const [isAscending, setIsAscending] = useState<boolean>(true);
   const stepsContainerRef = useRef<HTMLDivElement>(null);
+  const [leftWidth, setLeftWidth] = useState<number>(40);
+  const resizerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const currentStepData = sortSteps[currentStep] || {
     array: array,
@@ -75,7 +78,7 @@ const InsertionSort: React.FC = () => {
           description: `So sánh D = ${value} với A[${j}] = ${sortedArr[j]}`,
         });
 
-        // Bước 4: Di chuyển ph��n tử sang phải nếu lớn hơn
+        // Bước 4: Di chuyển phần tử sang phải nếu lớn hơn
         let moveArr = [...tempArr];
         moveArr[j + 1] = sortedArr[j];
         moveArr[j] = null; // Tạo chỗ trống ở vị trí cũ
@@ -205,6 +208,27 @@ const InsertionSort: React.FC = () => {
     setIsRunning(false); // Dừng animation nếu đang chạy
   };
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (containerRef.current) {
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const newLeftWidth = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+      if (newLeftWidth >= 20 && newLeftWidth <= 80) {
+        setLeftWidth(Math.round(newLeftWidth * 2) / 2);
+      }
+    }
+  };
+
+  const handleMouseUp = () => {
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+  };
+
   return (
     <div className="bg-white p-4">
 
@@ -214,9 +238,12 @@ const InsertionSort: React.FC = () => {
       </div>
 
       {/* Main content - Điều chỉnh tỷ lệ */}
-      <div className="flex space-x-4">
+      <div className="flex space-x-4 relative" ref={containerRef}>
         {/* Steps section */}
-        <div className="w-1/3 bg-gray-100 p-4 rounded h-[500px]">
+        <div 
+          className="bg-gray-100 p-4 rounded h-500px" 
+          style={{ width: `${leftWidth}%` }}
+        >
           <h2 className="font-bold mb-4">Các bước thực hiện</h2>
           <div 
             className="mt-4 h-[400px] overflow-y-auto scroll-smooth" 
@@ -240,8 +267,19 @@ const InsertionSort: React.FC = () => {
           </div>
         </div>
 
+        {/* Resizer */}
+        <div
+          ref={resizerRef}
+          className="resizer"
+          style={{ left: `${leftWidth}%` }}
+          onMouseDown={handleMouseDown}
+        />
+
         {/* Visualization section */}
-        <div className="w-2/3">
+        <div 
+          className="bg-white"
+          style={{ width: `${100 - leftWidth}%` }}
+        >
           {/* Input and array display */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">

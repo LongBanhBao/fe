@@ -13,6 +13,11 @@ import Register from './pages/Register/Register';
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
 import ProfileStudent from './pages/Profile/ProfileStudent';
 import ProfileTeacher from './pages/Profile/ProfileTeacher';
+import UpdateProfile from './pages/UpdateProfile/UpdateProfile';
+import ListExercise from './pages/ListExercise/ListExercise';
+import Exercise from './pages/Exercise/Exercise';
+import CreateExercise from './pages/CreateExercise/CreateExercise';
+
 const App: React.FC = () => {
   return (
     <Router>
@@ -30,9 +35,13 @@ const App: React.FC = () => {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/profile-student" element={<ProfileStudent />} />
           <Route path="/profile-teacher" element={<ProfileTeacher />} />
+          <Route path="/update-profile" element={<UpdateProfile />} />
+          <Route path="/list-exercise" element={<ListExercise />} />
+          <Route path="/exercise" element={<Exercise />} />
+          <Route path="/create-exercise" element={<CreateExercise />} />
         </Routes>
-      </MainLayout>
-    </Router>
+        </MainLayout>
+      </Router>
   );
 };
 

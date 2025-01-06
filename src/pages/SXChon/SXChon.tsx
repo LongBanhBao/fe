@@ -21,6 +21,9 @@ const SelectionSort: React.FC = () => {
   const [sortSteps, setSortSteps] = useState<Step[]>([]);
   const [isAscending, setIsAscending] = useState<boolean>(true);
   const stepsContainerRef = useRef<HTMLDivElement>(null);
+  const [leftWidth, setLeftWidth] = useState<number>(33);
+  const resizerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const selectionSort = useCallback((arr: number[]): Step[] => {
     let steps: Step[] = [];
@@ -188,6 +191,27 @@ const SelectionSort: React.FC = () => {
     description: "",
   };
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (containerRef.current) {
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const newLeftWidth = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+      if (newLeftWidth >= 20 && newLeftWidth <= 80) {
+        setLeftWidth(Math.round(newLeftWidth * 2) / 2);
+      }
+    }
+  };
+
+  const handleMouseUp = () => {
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+  };
+
   return (
     <div className="bg-white p-4">
 
@@ -197,9 +221,11 @@ const SelectionSort: React.FC = () => {
       </div>
 
       {/* Main content */}
-      <div className="flex space-x-4">
-        {/* Steps section */}
-        <div className="w-1/3 bg-gray-100 p-4 rounded h-[500px]">
+      <div className="flex space-x-4 relative" ref={containerRef}>
+        <div 
+          className="bg-gray-100 p-4 rounded h-500px" 
+          style={{ width: `${leftWidth}%` }}
+        >
           <h2 className="font-bold mb-4">Các bước thực hiện</h2>
           <div 
             className="mt-4 h-[400px] overflow-y-auto scroll-smooth" 
@@ -223,8 +249,17 @@ const SelectionSort: React.FC = () => {
           </div>
         </div>
 
-        {/* Visualization section */}
-        <div className="w-2/3">
+        <div
+          ref={resizerRef}
+          className="resizer"
+          style={{ left: `${leftWidth}%` }}
+          onMouseDown={handleMouseDown}
+        />
+
+        <div 
+          className="bg-white"
+          style={{ width: `${100 - leftWidth}%` }}
+        >
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">
               Nhập dãy số A (cách nhau bởi dấu phẩy):

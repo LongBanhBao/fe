@@ -32,6 +32,9 @@ const TKTT: React.FC = () => {
   const [result, setResult] = useState<number | null>(null);
   const [searchSteps, setSearchSteps] = useState<Step[]>([]);
   const [code, setCode] = useState<string>("");
+  const [leftWidth, setLeftWidth] = useState<number>(33); // Chiều rộng khung trái (%)
+  const resizerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const pythonCode = `
 def linear_search(A, K):
@@ -180,6 +183,30 @@ else:
     }
   }, [currentStep]);
 
+  // Xử lý sự kiện kéo resize
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (containerRef.current) {
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const newLeftWidth = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+      
+      // Loại bỏ requestAnimationFrame và làm tròn ít hơn
+      if (newLeftWidth >= 20 && newLeftWidth <= 80) {
+        setLeftWidth(Math.round(newLeftWidth * 2) / 2); // Làm tròn đến 0.5
+      }
+    }
+  };
+
+  const handleMouseUp = () => {
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+  };
+
   return (
     <div className="bg-white p-4">
 
@@ -188,10 +215,13 @@ else:
         Bài học &gt; Thuật toán tìm kiếm &gt; thuật toán tìm kiếm tuần tự
       </div>
 
-      {/* Main content */}
-      <div className="flex space-x-4">
+      {/* Main content với resizer */}
+      <div className="flex space-x-4 relative" ref={containerRef}>
         {/* Steps section */}
-        <div className="w-1/3 bg-gray-100 p-4 rounded h-[500px]">
+        <div 
+          className="bg-gray-100 p-4 rounded h-[500px]" 
+          style={{ width: `${leftWidth}%` }}
+        >
           <h2 className="text-2xl font-bold mb-4">Các bước thực hiện</h2>
           <div 
             className="mt-4 h-[400px] overflow-y-auto scroll-smooth" 
@@ -215,85 +245,94 @@ else:
           </div>
         </div>
 
-        {/* Visualization section */}
-        <div className="w-2/3">
-          <div className="step-container overflow-hidden">
-            {/* Input for array */}
-            <div className="mt-4">
-              <input
-                type="text"
-                value={arrayInput}
-                onChange={handleArrayInputChange}
-                placeholder="Nhập dãy số (cách nhau bởi dấu phẩy)"
-                className="border rounded px-2 py-1 w-full mb-4"
-              />
-            </div>
+        {/* Resizer */}
+        <div
+          ref={resizerRef}
+          className="resizer"
+          style={{ left: `${leftWidth}%` }}
+          onMouseDown={handleMouseDown}
+        />
 
-            <div className="flex mb-4 items-center">
-              <p className="mr-4 text-lg font-bold flex-shrink-0">A=</p>
-              <div className="flex flex-wrap">
-                {array.map((num, index) => (
-                  <div
-                    key={index}
-                    className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center mr-2 text-lg font-semibold
-                    ${index === currentStepData.index
-                      ? "bg-yellow-300"
-                      : index < currentStepData.index
-                      ? "bg-green-400"
-                      : "bg-purple-400"
-                    }`}
-                  >
-                    {num}
-                  </div>
-                ))}
-              </div>
+        {/* Visualization section */}
+        <div 
+          className="bg-white"
+          style={{ width: `${100 - leftWidth}%` }}
+        >
+          {/* Input for array */}
+          <div className="mt-4">
+            <input
+              type="text"
+              value={arrayInput}
+              onChange={handleArrayInputChange}
+              placeholder="Nhập dãy số (cách nhau bởi dấu phẩy)"
+              className="border rounded px-2 py-1 w-full mb-4"
+            />
+          </div>
+
+          <div className="flex mb-4 items-center">
+            <p className="mr-4 text-lg font-bold flex-shrink-0">A=</p>
+            <div className="flex flex-wrap">
+              {array.map((num, index) => (
+                <div
+                  key={index}
+                  className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center mr-2 text-lg font-semibold
+                  ${index === currentStepData.index
+                    ? "bg-yellow-300"
+                    : index < currentStepData.index
+                    ? "bg-green-400"
+                    : "bg-purple-400"
+                  }`}
+                >
+                  {num}
+                </div>
+              ))}
             </div>
-            <div className="flex mb-4 items-center">
-              <p className="mr-4 text-lg font-bold flex-shrink-0">i =</p>
-              <div className="flex flex-wrap">
-                {array.map((_, index) => (
-                  <div
-                    key={index}
-                    className={`flex-shrink-0 w-12 h-12 flex items-center justify-center mr-2 text-lg font-semibold
-                    ${index === currentStepData.index
-                      ? "bg-yellow-300"
-                      : index < currentStepData.index
-                      ? "bg-green-400"
-                      : "bg-purple-400"
-                    }`}
-                  >
-                    {index}
-                  </div>
-                ))}
-              </div>
+          </div>
+          <div className="flex mb-4 items-center">
+            <p className="mr-4 text-lg font-bold flex-shrink-0">i =</p>
+            <div className="flex flex-wrap">
+              {array.map((_, index) => (
+                <div
+                  key={index}
+                  className={`flex-shrink-0 w-12 h-12 flex items-center justify-center mr-2 text-lg font-semibold
+                  ${index === currentStepData.index
+                    ? "bg-yellow-300"
+                    : index < currentStepData.index
+                    ? "bg-green-400"
+                    : "bg-purple-400"
+                  }`}
+                >
+                  {index}
+                </div>
+              ))}
             </div>
-            <div className="bg-white border border-gray-300 p-4 rounded">
-              {currentStepData.index !== -1 ? (
-                <>
-                  <p className="font-bold mb-2">
-                    Bước {currentStep}: so sánh A[{currentStepData.index}] ={" "}
-                    {currentStepData.value} với k = {k}
-                  </p>
-                  <p>
-                    A[{currentStepData.index}] = {currentStepData.value}
-                    {currentStepData.isMatch ? " = " : " ≠ "} k
-                  </p>
-                  {!currentStepData.isMatch &&
-                    currentStepData.index < array.length - 1 && (
-                      <p>
-                        tăng i: i + 1 = {currentStepData.index + 1}
-                      </p>
-                    )}
-                </>
-              ) : (
-                // Hiển thị thông báo kết quả cuối cùng nếu là bước cuối
-                currentStep === searchSteps.length - 1 && (
-                  <p className="font-bold">
-                    {searchSteps[searchSteps.length - 1].description}
-                  </p>
-                )
-              )}
-            </div>
+          </div>
+          <div className="bg-white border border-gray-300 p-4 rounded">
+            {currentStepData.index !== -1 ? (
+              <>
+                <p className="font-bold mb-2">
+                  Bước {currentStep}: so sánh A[{currentStepData.index}] ={" "}
+                  {currentStepData.value} với k = {k}
+                </p>
+                <p>
+                  A[{currentStepData.index}] = {currentStepData.value}
+                  {currentStepData.isMatch ? " = " : " ≠ "} k
+                </p>
+                {!currentStepData.isMatch &&
+                  currentStepData.index < array.length - 1 && (
+                    <p>
+                      tăng i: i + 1 = {currentStepData.index + 1}
+                    </p>
+                  )}
+              </>
+            ) : (
+              // Hiển thị thông báo kết quả cuối cùng nếu là bước cuối
+              currentStep === searchSteps.length - 1 && (
+                <p className="font-bold">
+                  {searchSteps[searchSteps.length - 1].description}
+                </p>
+              )
+            )}
           </div>
 
           <div className="mt-4 flex justify-between items-center">

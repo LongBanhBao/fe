@@ -18,9 +18,11 @@ const TKNP: React.FC = () => {
   const [k, setK] = useState<number>(7);
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [isRunning, setIsRunning] = useState<boolean>(false);
-  const [result, setResult] = useState<number | null>(null);
   const [searchSteps, setSearchSteps] = useState<Step[]>([]);
   const stepsContainerRef = useRef<HTMLDivElement>(null);
+  const [leftWidth, setLeftWidth] = useState<number>(33);
+  const resizerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const binarySearch = useCallback((arr: number[], target: number): Step[] => {
     let steps: Step[] = [];
@@ -88,7 +90,7 @@ const TKNP: React.FC = () => {
     const steps = binarySearch(sortedArray, k);
     setSearchSteps(steps);
     setCurrentStep(0);
-    setResult(null);
+    setIsRunning(false);
   }, [array, k, binarySearch]);
 
   useEffect(() => {
@@ -99,14 +101,14 @@ const TKNP: React.FC = () => {
       return () => clearTimeout(timer);
     } else if (currentStep >= searchSteps.length) {
       setIsRunning(false);
-      setResult(searchSteps[searchSteps.length - 1]?.mid ?? -1);
+      setIsRunning(false);
     }
   }, [isRunning, currentStep, searchSteps]);
 
   const handleStart = () => {
     setIsRunning(true);
     setCurrentStep(0);
-    setResult(null);
+    setIsRunning(false);
   };
 
   const handleStop = () => {
@@ -244,6 +246,28 @@ print(json.dumps(steps))
     }
   }, [currentStep]);
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (containerRef.current) {
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const newLeftWidth = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+      
+      if (newLeftWidth >= 20 && newLeftWidth <= 80) {
+        setLeftWidth(Math.round(newLeftWidth * 2) / 2);
+      }
+    }
+  };
+
+  const handleMouseUp = () => {
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+  };
+
   return (
     <div className="bg-white p-4">
 
@@ -253,10 +277,13 @@ print(json.dumps(steps))
         Bài học &gt; Thuật toán tìm kiếm &gt; thuật toán tìm kiếm nhị phân
       </div>
 
-      {/* Main content */}
-      <div className="flex space-x-4">
+      {/* Main content với resizer */}
+      <div className="flex space-x-4 relative" ref={containerRef}>
         {/* Steps section */}
-        <div className="w-1/3 bg-gray-100 p-4 rounded h-[500px]">
+        <div 
+          className="bg-gray-100 p-4 rounded h-500" 
+          style={{ width: `${leftWidth}%` }}
+        >
           <h2 className="text-2xl font-bold mb-4">Các bước thực hiện</h2>
           <div 
             className="mt-4 h-[400px] overflow-y-auto scroll-smooth" 
@@ -280,8 +307,19 @@ print(json.dumps(steps))
           </div>
         </div>
 
+        {/* Thêm Resizer */}
+        <div
+          ref={resizerRef}
+          className="resizer"
+          style={{ left: `${leftWidth}%` }}
+          onMouseDown={handleMouseDown}
+        />
+
         {/* Visualization section */}
-        <div className="w-2/3">
+        <div 
+          className="bg-white"
+          style={{ width: `${100 - leftWidth}%` }}
+        >
           <div className="step-container overflow-hidden">
             {/* Input for array */}
             <div className="mt-4">

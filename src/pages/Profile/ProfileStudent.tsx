@@ -1,8 +1,15 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './ProfileStudent.css';
 
 const ProfileStudent: React.FC = () => {
-  return (
+  const navigate = useNavigate();
+
+  const handleUpdateClick = () => {
+    navigate('/update-profile');
+  };
+
+    return (
     <div className="profile-wrapper">
       {/* Phần thông tin sinh viên - bên trái */}
       <div className="profile-info-section">
@@ -53,7 +60,7 @@ const ProfileStudent: React.FC = () => {
 
           {/* Nút cập nhật */}
           <div className="button-container">
-            <button className="update-button">
+            <button className="update-button" onClick={handleUpdateClick}>
               Cập nhật thông tin cá nhân
             </button>
           </div>

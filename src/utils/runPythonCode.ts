@@ -1,4 +1,5 @@
 import axios from "axios";
+import Bottleneck from "bottleneck";
 
 export const instancePiston = axios.create({
   baseURL: "https://emkc.org/api/v2/piston",
@@ -32,28 +33,35 @@ let version: string;
   console.log(version);
 })();
 
-export const runPythonCode = async (code: string, input: string) => {
-  try {
-    const response = await instancePiston.post("/execute", {
-      language: "python",
-      version: version,
-      files: [
-        {
-          name: "main.py",
-          content: code,
-        },
-      ],
-      stdin: input,
-      args: [],
-      compile_timeout: 10000,
-      run_timeout: 3000,
-      compile_memory_limit: -1,
-      run_memory_limit: -1,
-    });
-    const output = response.data.run;
-    console.log(output);
-    return output;
-  } catch (error) {
-    console.log("Error in post piston", error);
+const limiter = new Bottleneck({
+  maxConcurrent: 1,
+  minTime: 300,
+});
+
+export const runPythonCode = limiter.wrap(
+  async (code: string, input: string) => {
+    try {
+      const response = await instancePiston.post("/execute", {
+        language: "python",
+        version: version,
+        files: [
+          {
+            name: "main.py",
+            content: code,
+          },
+        ],
+        stdin: input,
+        args: [],
+        compile_timeout: 10000,
+        run_timeout: 3000,
+        compile_memory_limit: -1,
+        run_memory_limit: -1,
+      });
+      const output = response.data.run;
+      console.log(output);
+      return output;
+    } catch (error) {
+      console.log("Error in post piston", error);
+    }
   }
-};
+);

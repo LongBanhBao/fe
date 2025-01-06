@@ -4,9 +4,15 @@ import { runPythonCode } from "../../utils/runPythonCode";
 import CodeActions from "../CodeActions";
 interface CodeEditorProps {
   defaultCode: string;
+  children?: React.ReactNode;
+  onSuccess: (code: string) => void;
 }
 
-const CodeEditor: React.FC<CodeEditorProps> = ({ defaultCode }) => {
+const CodeEditor: React.FC<CodeEditorProps> = ({
+  defaultCode,
+  children,
+  onSuccess,
+}) => {
   const [code, setCode] = useState(defaultCode);
   const [output, setOutput] = useState("");
   const [error, setError] = useState("");
@@ -22,6 +28,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ defaultCode }) => {
           setError(output.stderr);
         } else {
           setOutput(output.stdout);
+          onSuccess(code);
         }
       } else {
         setError("Không có code để chạy");
@@ -32,14 +39,14 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ defaultCode }) => {
   };
 
   return (
-    <div className="border rounded-lg overflow-hidden">
-      <div className="bg-gray-100 p-4 flex justify-between items-center">
+    <div className="overflow-hidden border rounded-lg">
+      <div className="flex items-center justify-between p-4 bg-gray-100">
         <h3 className="font-semibold">Code Editor</h3>
         <div className="flex items-center space-x-4">
           <CodeActions code={code} />
           <button
             onClick={handleExecuteCode}
-            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+            className="px-4 py-2 text-white bg-green-500 rounded hover:bg-green-600"
           >
             Chạy code
           </button>
@@ -80,7 +87,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ defaultCode }) => {
                 </pre>
               )}
               {error && (
-                <pre className="coder-output-text text-red-400">
+                <pre className="text-red-400 coder-output-text">
                   {error || "Chưa có kết quả"}
                 </pre>
               )}
@@ -88,6 +95,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ defaultCode }) => {
           </div>
         </div>
       </div>
+      {children}
     </div>
   );
 };

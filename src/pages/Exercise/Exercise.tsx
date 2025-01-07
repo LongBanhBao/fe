@@ -128,21 +128,7 @@ const Exercise: React.FC = () => {
       messages: [
         {
           role: "system",
-<<<<<<< HEAD
-          content: 
-          `
-          Answer language: Vietnamese
-          Programming language: Python
-          Your task is to check whether the user program is the program of the sample algorithm on ${sampleCode} or not:
-            - If the user program is an algorithm and different from the algorithm of ${sampleCode}, display the message: "you have not implemented the algorithm that the problem requires".
-            - If the user program is not an algorithm, display the message: "the program is not an algorithm, please implement the algorithm of the problem correctly".
-            - Avoid giving complete programs. If the user program is wrong, point out the specific error in the user program and give instructions to correct that program.
-            - Compare the user program with the sample program ${sampleCode} and point out the correct error that needs to be corrected.
-            - Check the print function to make sure the output is the same as the sample output. If it is not the same as the sample output, display the message: "Incorrect output, please perform the correct algorithm of the problem".
-          `,
-=======
           content: systenPrompt,
->>>>>>> f3572fb15c1ee8bb7a12317a1f2e9b5cb39aa64d
         },
         {
           role: "user",
@@ -165,15 +151,6 @@ const Exercise: React.FC = () => {
       })
     );
     setRunTestCases(results);
-<<<<<<< HEAD
-
-    const is = results.every((r) => r.result.trim() === r.output);
-    if (!is){
-      alert("Chưa qua hết test case")
-      handleAiReview(code);
-    }
-    if (is) alert("Đã qua hết test case");
-=======
     const is = results.every((r) => r.result.trim() === r.output);
     if (!is) {
       handleAiReview(code);
@@ -181,7 +158,6 @@ const Exercise: React.FC = () => {
     } else {
       alert("Đã qua hết test case");
     }
->>>>>>> f3572fb15c1ee8bb7a12317a1f2e9b5cb39aa64d
   };
   return (
     <div className="exercise-container">

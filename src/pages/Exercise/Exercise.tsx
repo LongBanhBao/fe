@@ -33,6 +33,30 @@ def insertion_sort(arr):
 print(insertion_sort(arr))
 `;
 
+const sampleCode2 = `
+def selectionSort(array, size):
+   
+    for step in range(size):
+        min_idx = step
+
+        for i in range(step + 1, size):
+         
+            # to sort in descending order, change > to < in this line
+            # select the minimum element in each loop
+            if array[i] < array[min_idx]:
+                min_idx = i
+         
+        # put min at the correct position
+        (array[step], array[min_idx]) = (array[min_idx], array[step])
+
+arr = list(map(int, input().split()))
+
+data = arr
+size = len(data)
+selectionSort(data, size)
+print(data)
+`;
+
 const systenPrompt = `
 # Bạn là 1 chuyên gia lập trình thuật toán với Python.
 # Nhiệm vụ của bạn:
@@ -121,8 +145,10 @@ const Exercise: React.FC = () => {
   const [runTestCases, setRunTestCases] = React.useState<
     Array<{ id: string; result: string; output: string; input: string }>
   >(testCase.map((tc) => ({ ...tc, result: "" })));
+  const [loading, setLoading] = React.useState<boolean>(false);
   const [aiReview, setAIReview] = React.useState<string>("");
   const handleAiReview = async (code: string) => {
+    setLoading(true);
     const response = await mistralAPI.post("/chat/completions", {
       model: "mistral-small-latest",
       messages: [
@@ -132,10 +158,11 @@ const Exercise: React.FC = () => {
         },
         {
           role: "user",
-          content: userPrompt(sampleCode, code),
+          content: userPrompt(sampleCode2, code),
         },
       ],
     });
+    setLoading(false);
     setAIReview(response.data.choices[0].message.content);
   };
   const handleRunCode = async (code: string) => {
@@ -156,6 +183,7 @@ const Exercise: React.FC = () => {
       handleAiReview(code);
       alert("Chưa qua hết test case");
     } else {
+      handleAiReview(code);
       alert("Đã qua hết test case");
     }
   };
@@ -203,7 +231,8 @@ const Exercise: React.FC = () => {
           ))}
         </div>
       </CodeEditor>
-      <Markdown>{aiReview}</Markdown>
+      {loading && <h1>Loading...</h1>}
+      {!loading && <Markdown>{aiReview}</Markdown>}
     </div>
   );
 };

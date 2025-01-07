@@ -53,10 +53,16 @@ const Exercise: React.FC = () => {
       messages: [
         {
           role: "system",
-          content: `Đánh giá chương trình người dùng đưa vào với code mẫu cho trước: ${sampleCode}. Chương trình cần phải đúng thuật toán được viết trong code mẫu
-          Ngôn ngữ trả lời: Tiếng Việt
-          Ngôn ngữ lập trình được sử dụng: Python
-          Do đang làm bài tập, nên bạn hạn chế tối đa việc hiển thị code để người dùng sao chép, thay vào đó hãy chỉ ra lỗi cụ thể trong code của người dùng.
+          content: 
+          `
+          Answer language: Vietnamese
+          Programming language: Python
+          Your task is to check whether the user program is the program of the sample algorithm on ${sampleCode} or not:
+            - If the user program is an algorithm and different from the algorithm of ${sampleCode}, display the message: "you have not implemented the algorithm that the problem requires".
+            - If the user program is not an algorithm, display the message: "the program is not an algorithm, please implement the algorithm of the problem correctly".
+            - Avoid giving complete programs. If the user program is wrong, point out the specific error in the user program and give instructions to correct that program.
+            - Compare the user program with the sample program ${sampleCode} and point out the correct error that needs to be corrected.
+            - Check the print function to make sure the output is the same as the sample output. If it is not the same as the sample output, display the message: "Incorrect output, please perform the correct algorithm of the problem".
           `,
         },
         {

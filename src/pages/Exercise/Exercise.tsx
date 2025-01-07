@@ -33,6 +33,81 @@ def insertion_sort(arr):
 print(insertion_sort(arr))
 `;
 
+const systenPrompt = `
+# Bạn là 1 chuyên gia lập trình thuật toán với Python.
+# Nhiệm vụ của bạn:
+## So sánh code của người dùng với code mẫu có sẵn
+## Ví dụ đúng thuật toán như sai logic so với thuật toán được dùng trong code mẫu:
+### Code mẫu: 
+  # Nhập mảng dưới dạng một dòng số cách nhau bởi dấu cách
+  arr = list(map(int, input().split()))
+  def insertion_sort(arr):
+      for i in range(1, len(arr)):
+          key = arr[i]
+          j = i - 1
+          # Thay dấu để test arr[j] < key
+          while j >= 0 and arr[j] > key:
+              arr[j + 1] = arr[j]
+              j -= 1
+          arr[j + 1] = key
+      return arr
+  print(insertion_sort(arr))
+### Code người dùng:
+  arr = list(map(int, input().split()))
+  def insertion_sort(arr):
+      for i in range(1, len(arr)):
+          key = arr[i]
+          j = i - 1
+          while j >= 0 and arr[j] < key:
+              arr[j + 1] = arr[j]
+              j -= 1
+          arr[j + 1] = key
+      return arr
+  print(insertion_sort(arr))
+### Phản hồi cho người dùng:
+  Code của bạn đúng thuật toán Insertion Sort nhưng yêu cầu là tăng dần trong khi bạn sắp xếp giảm dần. Sửa lại điều kiện a[j] < key thành a[j] > key
+
+## Ví dụ đúng thuật toán, đúng logic:
+### Code mẫu: 
+  # Nhập mảng dưới dạng một dòng số cách nhau bởi dấu cách
+  arr = list(map(int, input().split()))
+  def insertion_sort(arr):
+      for i in range(1, len(arr)):
+          key = arr[i]
+          j = i - 1
+          # Thay dấu để test arr[j] < key
+          while j >= 0 and arr[j] > key:
+              arr[j + 1] = arr[j]
+              j -= 1
+          arr[j + 1] = key
+      return arr
+  print(insertion_sort(arr))
+### Code người dùng:
+  lst = list(map(int, input().split()))
+  def selection_sort(lst):
+      n = len(lst)
+      for i in range(n - 1):
+          min = i
+          for j in range(i + 1, n):
+              if(lst[j] < lst[min]):
+                  min = j
+          lst[i], lst[min] = lst[min], lst[i]
+  print(selection_sort(lst))
+### Phản hồi cho người dùng:
+  Code của bạn không đúng thuật toán Insertion Sort. Bạn đang dùng thuật toán Selection Sort. Hãy dùng Insertion Sort
+
+# Yêu cầu:
+1.Trả lời bằng Tiếng Việt.
+2.Ngôn ngữ lập trình được sử dụng: Python
+3.Chỉ đánh giá đúng yêu cầu, không nói thêm lan man dài dòng
+`;
+const userPrompt = (sampleCode: string, code: string) => `
+Code mẫu có sẵn: 
+${sampleCode}
+Code của người dùng:
+${code}
+`;
+
 const mistralAPI = axios.create({
   baseURL: "https://api.mistral.ai/v1",
   headers: {
@@ -53,6 +128,7 @@ const Exercise: React.FC = () => {
       messages: [
         {
           role: "system",
+<<<<<<< HEAD
           content: 
           `
           Answer language: Vietnamese
@@ -64,10 +140,13 @@ const Exercise: React.FC = () => {
             - Compare the user program with the sample program ${sampleCode} and point out the correct error that needs to be corrected.
             - Check the print function to make sure the output is the same as the sample output. If it is not the same as the sample output, display the message: "Incorrect output, please perform the correct algorithm of the problem".
           `,
+=======
+          content: systenPrompt,
+>>>>>>> f3572fb15c1ee8bb7a12317a1f2e9b5cb39aa64d
         },
         {
           role: "user",
-          content: code,
+          content: userPrompt(sampleCode, code),
         },
       ],
     });
@@ -86,6 +165,7 @@ const Exercise: React.FC = () => {
       })
     );
     setRunTestCases(results);
+<<<<<<< HEAD
 
     const is = results.every((r) => r.result.trim() === r.output);
     if (!is){
@@ -93,6 +173,15 @@ const Exercise: React.FC = () => {
       handleAiReview(code);
     }
     if (is) alert("Đã qua hết test case");
+=======
+    const is = results.every((r) => r.result.trim() === r.output);
+    if (!is) {
+      handleAiReview(code);
+      alert("Chưa qua hết test case");
+    } else {
+      alert("Đã qua hết test case");
+    }
+>>>>>>> f3572fb15c1ee8bb7a12317a1f2e9b5cb39aa64d
   };
   return (
     <div className="exercise-container">

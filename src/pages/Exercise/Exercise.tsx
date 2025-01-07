@@ -80,9 +80,13 @@ const Exercise: React.FC = () => {
       })
     );
     setRunTestCases(results);
-    handleAiReview(code);
+
     const is = results.every((r) => r.result.trim() === r.output);
-    if (!is) alert("Chưa qua hết test case");
+    if (!is){
+      alert("Chưa qua hết test case")
+      handleAiReview(code);
+    }
+    if (is) alert("Đã qua hết test case");
   };
   return (
     <div className="exercise-container">
@@ -106,7 +110,7 @@ const Exercise: React.FC = () => {
             Đề bài: viết thuật toán sx chèn
           </div>
           <div className="exercise-io">
-            <div className="exercise-input">input: [3,2,1]</div>
+            <div className="exercise-input">input: 3 2 1</div>
             <div className="exercise-output">output: [1,2,3]</div>
           </div>
         </div>

@@ -158,7 +158,7 @@ const Exercise: React.FC = () => {
         },
         {
           role: "user",
-          content: userPrompt(sampleCode2, code),
+          content: userPrompt(sampleCode, code),
         },
       ],
     });

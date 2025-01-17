@@ -35,6 +35,15 @@ const CreateExercise: React.FC = () => {
     }
   };
 
+  const updateLineNumbers = (e: React.FormEvent<HTMLTextAreaElement>) => {
+    const textarea = e.currentTarget;
+    const lineNumbers = textarea.parentElement?.querySelector('.line-numbers');
+    if (lineNumbers) {
+      const lines = textarea.value.split('\n').length;
+      lineNumbers.innerHTML = Array.from({ length: lines }, (_, i) => i + 1).join('<br>');
+    }
+  };
+
   return (
     <div className="create-exercise-container">
       <div className="exercise-header">
@@ -60,54 +69,64 @@ const CreateExercise: React.FC = () => {
         </div>
         <div className="exercise-content">
           <div className="exercise-description">
-            <textarea />
+            <textarea placeholder="Đề bài" className="description-input" />
+          </div>
+          <div className="exercise-description">
+            <div className="line-numbers"></div>
+            <textarea
+              placeholder="Code mẫu"
+              className="description-output"
+              onInput={updateLineNumbers}
+            />
           </div>
           <div className="exercise-io">
             <div className="exercise-input">
-              <label>Input mẫu</label>
+              <label>Input mẫu:</label>
               <textarea />
             </div>
             <div className="exercise-output">
-              <label>Output mẫu</label>
+              <label>Output mẫu:</label>
               <textarea />
             </div>
           </div>
         </div>
       </div>
-      <h3>Các testcase</h3>
-      <table className="testcase-table">
-        <thead>
-          <tr>
-            <th>STT</th>
-            <th>Input</th>
-            <th>Output</th>
-          </tr>
-        </thead>
-        <tbody>
-          {testCases.map((testCase, index) => (
-            <tr key={index}>
-              <td>{index + 1}</td>
-              <td>
-                <input
-                  type="text"
-                  value={testCase.input}
-                  onChange={(e) => handleTestCaseChange(index, 'input', e.target.value)}
-                />
-              </td>
-              <td>
-                <input
-                  type="text"
-                  value={testCase.output}
-                  onChange={(e) => handleTestCaseChange(index, 'output', e.target.value)}
-                />
-              </td>
+      <div className="testcase-container">
+        <h3>TESTCASES</h3>
+        <table className="testcase-table">
+          <thead>
+            <tr>
+              <th>STT</th>
+              <th>Input</th>
+              <th>Output</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      <div className="button-container">
-        <button onClick={addTestCase}>Thêm Test case</button>
-        <button onClick={removeTestCase}>Xoá Test case</button>
+          </thead>
+          <tbody>
+            {testCases.map((testCase, index) => (
+              <tr key={index}>
+                <td>{index + 1}</td>
+                <td>
+                  <input
+                    type="text"
+                    value={testCase.input}
+                    onChange={(e) => handleTestCaseChange(index, 'input', e.target.value)}
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    value={testCase.output}
+                    onChange={(e) => handleTestCaseChange(index, 'output', e.target.value)}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div className="button-container">
+          <button onClick={addTestCase}>Thêm Testcase</button>
+          <button onClick={removeTestCase}>Xoá Testcase</button>
+        </div>
       </div>
     </div>
   );

@@ -1,10 +1,17 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './CreateExercise.css';
 
 const CreateExercise: React.FC = () => {
   const [category, setCategory] = useState('');
   const [algorithms, setAlgorithms] = useState<string[]>([]);
   const [testCases, setTestCases] = useState([{ input: '', output: '' }]);
+  const [exerciseName, setExerciseName] = useState('');
+  const [description, setDescription] = useState('');
+  const [inputSample, setInputSample] = useState('');
+  const [outputSample, setOutputSample] = useState('');
+  const [sampleCode, setSampleCode] = useState('');
+  const navigate = useNavigate();
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedCategory = e.target.value;
@@ -44,12 +51,47 @@ const CreateExercise: React.FC = () => {
     }
   };
 
+  const handleCreateExercise = () => {
+    if (!exerciseName) {
+      alert('Bạn chưa nhập tên bài');
+      return;
+    }
+    if (!category) {
+      alert('Bạn chưa chọn thể loại');
+      return;
+    }
+    if (!description) {
+      alert('Bạn chưa nhập đề bài');
+      return;
+    }
+    if (!inputSample) {
+      alert('Bạn chưa nhập Input mẫu');
+      return;
+    }
+    if (!outputSample) {
+      alert('Bạn chưa nhập Output mẫu');
+      return;
+    }
+    if (testCases.some(tc => !tc.input || !tc.output)) {
+      alert('Bạn chưa nhập đầy đủ testcase');
+      return;
+    }
+    if (!sampleCode) {
+      alert('Bạn chưa nhập Code mẫu');
+      return;
+    }
+
+    if (window.confirm('Bạn xác nhận tạo bài?')) {
+      navigate('/list-Exercise');
+    }
+  };
+
   return (
     <div className="create-exercise-container">
       <div className="exercise-header">
         <div className="exercise-info">
           <label>Tên bài</label>
-          <input type="text" />
+          <input type="text" value={exerciseName} onChange={(e) => setExerciseName(e.target.value)} />
           <label>Thể loại</label>
           <select value={category} onChange={handleCategoryChange}>
             <option value="" disabled hidden>
@@ -69,24 +111,39 @@ const CreateExercise: React.FC = () => {
         </div>
         <div className="exercise-content">
           <div className="exercise-description">
-            <textarea placeholder="Đề bài" className="description-input" />
+            <textarea 
+              placeholder="Đề bài" 
+              className="description-input"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
           </div>
           <div className="exercise-description">
             <div className="line-numbers"></div>
             <textarea
               placeholder="Code mẫu"
               className="description-output"
+              value={sampleCode}
+              onChange={(e) => setSampleCode(e.target.value)}
               onInput={updateLineNumbers}
             />
           </div>
           <div className="exercise-io">
             <div className="exercise-input">
               <label>Input mẫu:</label>
-              <textarea />
+              <textarea
+                placeholder="Nhập input mẫu"
+                value={inputSample}
+                onChange={(e) => setInputSample(e.target.value)}
+              />
             </div>
             <div className="exercise-output">
               <label>Output mẫu:</label>
-              <textarea />
+              <textarea
+                placeholder="Nhập output mẫu"
+                value={outputSample}
+                onChange={(e) => setOutputSample(e.target.value)}
+              />
             </div>
           </div>
         </div>
@@ -128,6 +185,7 @@ const CreateExercise: React.FC = () => {
           <button onClick={removeTestCase}>Xoá Testcase</button>
         </div>
       </div>
+      <button onClick={handleCreateExercise}>Tạo bài</button>
     </div>
   );
 };

@@ -1,4 +1,8 @@
 import React, { useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { format } from "date-fns";
+import { vi } from "date-fns/locale";
 import "./Register.css";
 
 const Register = () => {
@@ -6,6 +10,9 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<string>("student");
   const [error, setError] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [birthDate, setBirthDate] = useState<Date | null>(null);
+  const [gender, setGender] = useState("male");
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +28,14 @@ const Register = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password, role }),
+        body: JSON.stringify({ 
+          email, 
+          password, 
+          role, 
+          fullName, 
+          birthDate: birthDate ? format(birthDate, 'dd/MM/yyyy') : "", 
+          gender 
+        }),
       });
 
       if (!response.ok) {
@@ -41,6 +55,14 @@ const Register = () => {
       <div className="register-box">
         <h2 className="register-title">Đăng ký</h2>
         <form onSubmit={handleRegister}>
+          <input
+            type="text"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            placeholder="Họ tên"
+            className="register-input"
+            required
+          />
           <div className="register-role">
             <label>
               <input
@@ -81,6 +103,39 @@ const Register = () => {
             className="register-input"
             required
           />
+          <DatePicker
+            selected={birthDate}
+            onChange={(date: Date | null) => date && setBirthDate(date)}
+            dateFormat="dd/MM/yyyy"
+            placeholderText="Ngày sinh"
+            className="register-input"
+            locale={vi}
+            required
+          />
+          <div className="register-gender">
+            <label>
+              <input
+                type="radio"
+                name="gender"
+                value="male"
+                checked={gender === "male"}
+                onChange={(e) => setGender(e.target.value)}
+                required
+              />
+              Nam
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="gender"
+                value="female"
+                checked={gender === "female"}
+                onChange={(e) => setGender(e.target.value)}
+                required
+              />
+              Nữ
+            </label>
+          </div>
           <button type="submit" className="register-button">
             Đăng ký
           </button>

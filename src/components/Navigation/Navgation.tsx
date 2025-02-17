@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './Navgation.css';
 
 const Navigation: React.FC = () => {
   const [isVisible, setIsVisible] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const searchAlgorithms = [
     { name: 'Tìm kiếm tuần tự', path: '/tktt' },
@@ -17,11 +19,24 @@ const Navigation: React.FC = () => {
     { name: 'Sắp xếp nổi bọt', path: '/sx-noi-bot' }
   ];
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsAuthenticated(!!token);
+  }, [location]);
+
   React.useEffect(() => {
     setIsVisible(false);
     const timer = setTimeout(() => setIsVisible(true), 100);
     return () => clearTimeout(timer);
   }, [location]);
+
+  const handleLogout = () => {
+    if (window.confirm("Bạn có muốn đăng xuất không?")) {
+      localStorage.removeItem("token");
+      setIsAuthenticated(false);
+      navigate("/");
+    }
+  };
 
   return (
     <nav className="nav-container">
@@ -86,10 +101,16 @@ const Navigation: React.FC = () => {
                   Coder
                 </Link>
                 <Link to="/list-exercise" className="nav-dropdown-item">
-                  Danh sách bài tập
+                  Bài tập Coding
+                </Link>
+                <Link to="" className="nav-dropdown-item">
+                  Bài tập trắc nghiệm
                 </Link>
               </div>
             </div>
+            <Link to="/NewclassroomStudent" className="nav-link">
+              Classroom
+            </Link>
           </div>
 
           <div className="nav-right">
@@ -97,12 +118,20 @@ const Navigation: React.FC = () => {
               <span className="text-gray-600 text-sm">A</span>
             </div>
             
-            <Link to="/login" className="nav-auth-link">
-              Đăng nhập
-            </Link>
-            <Link to="/register" className="nav-auth-link">
-              Đăng ký
-            </Link>
+            {isAuthenticated ? (
+              <button onClick={handleLogout} className="nav-auth-link">
+                Đăng xuất
+              </button>
+            ) : (
+              <>
+                <Link to="/login" className="nav-auth-link">
+                  Đăng nhập
+                </Link>
+                <Link to="/register" className="nav-auth-link">
+                  Đăng ký
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>

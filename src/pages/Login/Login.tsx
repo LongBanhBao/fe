@@ -1,13 +1,16 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Login.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(""); // Clear previous errors
     try {
       const response = await fetch("http://localhost:5001/api/auth/login", {
         method: "POST",
@@ -18,14 +21,15 @@ const Login = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Đăng nhập thất bại");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Đăng nhập thất bại");
       }
 
       const data = await response.json();
       localStorage.setItem("token", data.token);
-      window.location.href = "/";
-    } catch (error) {
-      setError("Đăng nhập thất bại");
+      navigate("/");
+    } catch (error: any) {
+      setError(error.message || "Đăng nhập thất bại");
     }
   };
 
